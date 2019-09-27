@@ -40,25 +40,52 @@ class Emotes(commands.Cog):
                 else:
                     print('WTF')
 
-    @commands.command()
-    async def hug(self, ctx, members: commands.Greedy[discord.Member]):
-        if len(members) == 0 or (len(members) == 1 and members[0] == ctx.author):
-            text = f'{ctx.author.mention}, you look like you could use a hug.'
-            gif_choices = self.data['hugs']
-        elif len(members) == 1:
-            if members[0] == ctx.bot.user:
-                text = f'Nice try, {ctx.author.mention}'
-                gif_choices = self.data['failed_hugs']
-            else:
-                text = f'{members[0].mention} you got hugged by {ctx.author.mention}.'
-                gif_choices = self.data['hugs']
-        else:
-            text = f'{comma_separator([member.mention for member in members])} you got hugged by {ctx.author.mention}.'
-            gif_choices = self.data['group_hugs']
-        embed = discord.Embed(description=text)
-
+    async def gif_embed(self, description, gif_choices):
+        embed = discord.Embed(description=description)
         gif_id = self.rng.choice(gif_choices)
         gif_url = await self.get_gif_url(gif_id)
         embed.set_image(url=gif_url)
+        return embed
 
+    @commands.command()
+    async def hug(self, ctx, members: commands.Greedy[discord.Member]):
+        print(members)
+
+        if len(members) == 0 or (len(members) == 1 and members[0] == ctx.author):
+            text = f'{ctx.author.display_name}, you look like you could use a hug.'
+            gif_choices = self.data['hugs']
+        elif len(members) == 1:
+            if members[0] == ctx.bot.user:
+                text = f'Nice try, {ctx.author.display_name}'
+                gif_choices = self.data['failed_hugs']
+            else:
+                text = f'{members[0].display_name} you got hugged by {ctx.author.display_name}.'
+                gif_choices = self.data['hugs']
+        else:
+            text = f'{comma_separator([member.display_name for member in members])} you got hugged by {ctx.author.display_name}.'
+            gif_choices = self.data['group_hugs']
+        
+        embed = await self.gif_embed(text, gif_choices)
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def cuddle(self, ctx, members: commands.Greedy[discord.Member]):
+        gif_choices = self.data['cuddle']
+        if len(members) == 0 or (len(members) == 1 and members[0] == ctx.author):
+            text = f'{ctx.author.display_name}, you look like you could use some cuddles.'
+        else:
+            text = f'{comma_separator([member.display_name for member in members])} you got cuddled by {ctx.author.display_name}.'
+        
+        embed = await self.gif_embed(text, gif_choices)
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def kiss(self, ctx, members: commands.Greedy[discord.Member]):
+        gif_choices = self.data['kiss']
+        if len(members) == 0 or (len(members) == 1 and members[0] == ctx.author):
+            text = f'{ctx.author.display_name}, you look like you could use a kiss.'
+        else:
+            text = f'{comma_separator([member.display_name for member in members])} you got kissed by {ctx.author.display_name}.'
+        
+        embed = await self.gif_embed(text, gif_choices)
         await ctx.send(embed=embed)
