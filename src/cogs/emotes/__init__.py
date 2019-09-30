@@ -49,8 +49,6 @@ class Emotes(commands.Cog):
 
     @commands.command()
     async def hug(self, ctx, members: commands.Greedy[discord.Member]):
-        print(members)
-
         if len(members) == 0 or (len(members) == 1 and members[0] == ctx.author):
             text = f'{ctx.author.display_name}, you look like you could use a hug.'
             gif_choices = self.data['hugs']
