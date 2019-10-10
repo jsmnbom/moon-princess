@@ -1,7 +1,7 @@
 import os
 import discord
 from discord.ext import commands
-from tortoise import Tortoise, run_async
+from tortoise import Tortoise
 import sys
 import asyncio
 import signal
