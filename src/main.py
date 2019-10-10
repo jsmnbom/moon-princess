@@ -33,7 +33,12 @@ for cog in map(cogs.__dict__.get, cogs.__all__):
     bot.add_cog(cog(bot))
 
 def _cancel_tasks(loop):
-    tasks = {t for t in asyncio.all_tasks(loop=loop) if not t.done()}
+    try:
+        task_retriever = asyncio.Task.all_tasks
+    except AttributeError:
+        task_retriever = asyncio.all_tasks
+
+    tasks = {t for t in task_retriever(loop=loop) if not t.done()}
 
     if not tasks:
         return
