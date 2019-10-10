@@ -16,7 +16,7 @@ class DadBot(commands.Cog, name='Options'):
         if message.author == self.bot.user:
             return
 
-        match = re.match(r'''^(?:i'm|i am)\s(.*)''', message.content, re.MULTILINE | re.IGNORECASE)
+        match = re.match(r'''^(?:i'm|i am|im)\s(.*)''', message.content, re.MULTILINE | re.IGNORECASE)
         if match:
             db_options, _ = await db.GuildOptions.get_or_create(guild_id=message.guild.id)
 
