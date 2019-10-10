@@ -3,11 +3,13 @@ from discord.ext import commands
 import db
 import re
 
-WEBHOOK_NAME = 'Moon Princess Proxy'
-
 class DadBot(commands.Cog, name='Options'):
     def __init__(self, bot):
         self.bot = bot
+    
+    @property
+    def webhook_name(self):
+        return f'{self.bot.user.name} Proxy'
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -20,7 +22,7 @@ class DadBot(commands.Cog, name='Options'):
 
             if message.channel.id in db_options.dadbot_enabled_channels:
                 for webhook in await message.channel.webhooks():
-                    if webhook.name == WEBHOOK_NAME:
+                    if webhook.name == self.webhook_name:
                         await webhook.send(f'Hi {match.group(1)}, I\'m dad!', username='Dad', avatar_url='https://i.imgur.com/YaP098z.jpg')
 
     @commands.group()
@@ -52,7 +54,7 @@ class DadBot(commands.Cog, name='Options'):
         await db_options.save()
 
         for channel in channels:
-            await channel.create_webhook(name=WEBHOOK_NAME)
+            await channel.create_webhook(name=self.webhook_name)
 
         await ctx.send('Enabling dadbot for channel(s): {}'.format(', '.join(channel.mention for channel in set(channels))))
 
@@ -68,7 +70,7 @@ class DadBot(commands.Cog, name='Options'):
 
         for channel in channels:
             for webhook in await channel.webhooks():
-                if webhook.name == WEBHOOK_NAME:
+                if webhook.name == self.webhook_name:
                     await webhook.delete()
 
         await ctx.send('Disabling dadbot for channel(s): {}'.format(', '.join(channel.mention for channel in set(channels))))
