@@ -1,4 +1,4 @@
 python-dotenv
 discord.py
-tortoise
+tortoise-orm
 aiosqlite
