@@ -32,8 +32,7 @@ class DadBot(commands.Cog, name='Options'):
     @commands.group()
     async def dadbot(self, ctx):
         if ctx.invoked_subcommand is None:
-            await ctx.send('Invalid subcommand. See `{}help dadbot` for more info.'
-                           .format(await ctx.bot.get_prefix(ctx.message)))
+            await self.bot.send_help(ctx, 'dadbot')
 
     @dadbot.command(name='showenabled', aliases=['show'])
     async def show_enabled(self, ctx):
