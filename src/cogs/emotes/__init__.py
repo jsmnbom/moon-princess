@@ -8,8 +8,6 @@ import os
 import logging
 from functools import lru_cache
 
-TENOR_API_KEY = os.getenv('TENOR_API_KEY')
-
 
 def comma_separator(sequence):
     if not sequence:
@@ -29,11 +27,13 @@ class Emotes(commands.Cog):
         with open(os.path.join(dir_path, 'data.json'), 'r') as f:
             self.data = json.load(f)
 
+        self.tenor_api_key = os.getenv('TENOR_API_KEY')
+
     @lru_cache(maxsize=256)
     async def get_gif_url(self, gif_id):
         params = {
             'ids': gif_id,
-            'key': TENOR_API_KEY,
+            'key': self.tenor_api_key,
             'media_filter': 'minimal'
         }
         async with aiohttp.ClientSession() as session:

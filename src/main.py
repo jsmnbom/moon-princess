@@ -9,17 +9,20 @@ import asyncio
 import signal
 
 import logging
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    level=logging.INFO)
 
 load_dotenv()
 
-sys.path.append('.')
-
 
 class MoonPrincessBot(commands.Bot):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    class Help(discord.ext.commands.DefaultHelpCommand):
+        def __init__(self):
+            super().__init__()
+            self.no_category = 'Other'
+
+    def __init__(self):
+        super().__init__(command_prefix='-', help_command=self.Help())
 
         self.loop.create_task(self.db_task())
 
@@ -34,19 +37,11 @@ class MoonPrincessBot(commands.Bot):
         try:
             await db.init()
             while not self.is_closed():
-                await asyncio.sleep(1)
+                await asyncio.sleep(60)
         finally:
             await db.close()
 
 
-class MoonPrincessHelp(discord.ext.commands.DefaultHelpCommand):
-    def __init__(self):
-        super().__init__()
-        self.no_category = 'Other'
-
-
-bot = MoonPrincessBot(command_prefix='-', help_command=MoonPrincessHelp())
-
-
 if __name__ == '__main__':
+    bot = MoonPrincessBot()
     bot.run(os.getenv('DISCORD_BOT_TOKEN'))
