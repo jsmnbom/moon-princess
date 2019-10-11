@@ -12,6 +12,10 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 load_dotenv()
 
+class MoonPrincessContext(commands.Context):
+        async def get_guild_options(self):
+            options, _ = await db.GuildOptions.get_or_create(guild_id=self.message.guild.id)
+            return options
 
 class MoonPrincessBot(commands.Bot):
     class Help(discord.ext.commands.DefaultHelpCommand):
@@ -38,6 +42,12 @@ class MoonPrincessBot(commands.Bot):
                 await asyncio.sleep(60)
         finally:
             await db.close()
+
+    async def get_context(self, message):
+        return await super().get_context(message, cls=MoonPrincessContext)
+
+    async def on_message(self, message):
+        await self.invoke(await self.get_context(message))
 
 
 if __name__ == '__main__':

@@ -20,9 +20,10 @@ class DadBot(commands.Cog, name='Options'):
         match = re.match(r'''^(?:i'm|i am|im)\s(.*)''',
                          message.content, re.MULTILINE | re.IGNORECASE)
         if match:
-            db_options, _ = await db.GuildOptions.get_or_create(guild_id=message.guild.id)
+            ctx = await self.bot.get_context(message)
+            guild_options = await ctx.get_guild_options()
 
-            if message.channel.id in db_options.dadbot_enabled_channels:
+            if message.channel.id in guild_options.dadbot_enabled_channels:
                 for webhook in await message.channel.webhooks():
                     if webhook.name == self.webhook_name:
                         await webhook.send(f'Hi {match.group(1)}, I\'m dad!',
@@ -36,12 +37,12 @@ class DadBot(commands.Cog, name='Options'):
 
     @dadbot.command(name='showenabled', aliases=['show'])
     async def show_enabled(self, ctx):
-        db_options, _ = await db.GuildOptions.get_or_create(guild_id=ctx.guild.id)
+        guild_options = await ctx.get_guild_options()
 
         channels = ctx.guild.text_channels
 
         channels = [
-            channel for channel in channels if channel.id in db_options.dadbot_enabled_channels]
+            channel for channel in channels if channel.id in guild_options.dadbot_enabled_channels]
 
         if not channels:
             await ctx.send('Dadbot not enabled for any channels.')
@@ -50,14 +51,14 @@ class DadBot(commands.Cog, name='Options'):
 
     @dadbot.command()
     async def enable(self, ctx, channels: commands.Greedy[discord.TextChannel]):
-        db_options, _ = await db.GuildOptions.get_or_create(guild_id=ctx.guild.id)
+        guild_options = await ctx.get_guild_options()
 
         if not channels:
             channels = ctx.guild.text_channels
 
-        db_options.dadbot_enabled_channels = list(set(db_options.dadbot_enabled_channels) |
-                                                  set(channel.id for channel in channels))
-        await db_options.save()
+        guild_options.dadbot_enabled_channels = list(set(guild_options.dadbot_enabled_channels) |
+                                                     set(channel.id for channel in channels))
+        await guild_options.save()
 
         for channel in channels:
             await channel.create_webhook(name=self.webhook_name)
@@ -66,14 +67,14 @@ class DadBot(commands.Cog, name='Options'):
 
     @dadbot.command()
     async def disable(self, ctx, channels: commands.Greedy[discord.TextChannel]):
-        db_options, _ = await db.GuildOptions.get_or_create(guild_id=ctx.guild.id)
+        guild_options = await ctx.get_guild_options()
 
         if not channels:
             channels = ctx.guild.text_channels
 
-        db_options.dadbot_enabled_channels = list(set(db_options.dadbot_enabled_channels) -
-                                                  set(channel.id for channel in channels))
-        await db_options.save()
+        guild_options.dadbot_enabled_channels = list(set(guild_options.dadbot_enabled_channels) -
+                                                     set(channel.id for channel in channels))
+        await guild_options.save()
 
         for channel in channels:
             for webhook in await channel.webhooks():
