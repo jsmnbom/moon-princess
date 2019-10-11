@@ -15,4 +15,8 @@ async def init():
 
     await Tortoise.generate_schemas(safe=True)
 
-    logger.debug('Init done')
+    logger.info('Connected')
+
+async def close():
+    logger.info('Closing connection')
+    await Tortoise.close_connections()
