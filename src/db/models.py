@@ -1,6 +1,7 @@
 from tortoise.models import Model
 from tortoise import fields
 
+
 class GuildOptions(Model):
     id = fields.BigIntField(pk=True)
     guild_id = fields.BigIntField()

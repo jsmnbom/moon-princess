@@ -10,12 +10,14 @@ from functools import lru_cache
 
 TENOR_API_KEY = os.getenv('TENOR_API_KEY')
 
+
 def comma_separator(sequence):
     if not sequence:
         return ''
     if len(sequence) == 1:
         return sequence[0]
     return '{} and {}'.format(', '.join(sequence[:-1]), sequence[-1])
+
 
 class Emotes(commands.Cog):
     def __init__(self, bot):
@@ -71,7 +73,7 @@ class Emotes(commands.Cog):
         else:
             text = f'{comma_separator([member.display_name for member in members])} you got hugged by {ctx.author.display_name}.'
             gif_choices = self.data['group_hugs']
-        
+
         embed = await self.gif_embed(text, gif_choices)
         await ctx.send(embed=embed)
 
@@ -83,7 +85,7 @@ class Emotes(commands.Cog):
             text = f'{ctx.author.display_name}, you look like you could use some cuddles.'
         else:
             text = f'{comma_separator([member.display_name for member in members])} you got cuddled by {ctx.author.display_name}.'
-        
+
         embed = await self.gif_embed(text, gif_choices)
         await ctx.send(embed=embed)
 
@@ -95,6 +97,6 @@ class Emotes(commands.Cog):
             text = f'{ctx.author.display_name}, you look like you could use a kiss.'
         else:
             text = f'{comma_separator([member.display_name for member in members])} you got kissed by {ctx.author.display_name}.'
-        
+
         embed = await self.gif_embed(text, gif_choices)
         await ctx.send(embed=embed)

@@ -3,10 +3,11 @@ from discord.ext import commands
 import db
 import re
 
+
 class DadBot(commands.Cog, name='Options'):
     def __init__(self, bot):
         self.bot = bot
-    
+
     @property
     def webhook_name(self):
         return f'{self.bot.user.name} Proxy'
@@ -16,19 +17,22 @@ class DadBot(commands.Cog, name='Options'):
         if message.author == self.bot.user:
             return
 
-        match = re.match(r'''^(?:i'm|i am|im)\s(.*)''', message.content, re.MULTILINE | re.IGNORECASE)
+        match = re.match(r'''^(?:i'm|i am|im)\s(.*)''',
+                         message.content, re.MULTILINE | re.IGNORECASE)
         if match:
             db_options, _ = await db.GuildOptions.get_or_create(guild_id=message.guild.id)
 
             if message.channel.id in db_options.dadbot_enabled_channels:
                 for webhook in await message.channel.webhooks():
                     if webhook.name == self.webhook_name:
-                        await webhook.send(f'Hi {match.group(1)}, I\'m dad!', username='Dad', avatar_url='https://i.imgur.com/YaP098z.jpg')
+                        await webhook.send(f'Hi {match.group(1)}, I\'m dad!',
+                                           username='Dad', avatar_url='https://i.imgur.com/YaP098z.jpg')
 
     @commands.group()
     async def dadbot(self, ctx):
         if ctx.invoked_subcommand is None:
-            await ctx.send('Invalid subcommand. See `{}help dadbot` for more info.'.format(await ctx.bot.get_prefix(ctx.message)))
+            await ctx.send('Invalid subcommand. See `{}help dadbot` for more info.'
+                           .format(await ctx.bot.get_prefix(ctx.message)))
 
     @dadbot.command(name='showenabled', aliases=['show'])
     async def show_enabled(self, ctx):
@@ -36,7 +40,8 @@ class DadBot(commands.Cog, name='Options'):
 
         channels = ctx.guild.text_channels
 
-        channels = [channel for channel in channels if channel.id in db_options.dadbot_enabled_channels]
+        channels = [
+            channel for channel in channels if channel.id in db_options.dadbot_enabled_channels]
 
         if not channels:
             await ctx.send('Dadbot not enabled for any channels.')
@@ -50,7 +55,8 @@ class DadBot(commands.Cog, name='Options'):
         if not channels:
             channels = ctx.guild.text_channels
 
-        db_options.dadbot_enabled_channels = list(set(db_options.dadbot_enabled_channels) | set(channel.id for channel in channels))
+        db_options.dadbot_enabled_channels = list(set(db_options.dadbot_enabled_channels) |
+                                                  set(channel.id for channel in channels))
         await db_options.save()
 
         for channel in channels:
@@ -65,7 +71,8 @@ class DadBot(commands.Cog, name='Options'):
         if not channels:
             channels = ctx.guild.text_channels
 
-        db_options.dadbot_enabled_channels = list(set(db_options.dadbot_enabled_channels) - set(channel.id for channel in channels))
+        db_options.dadbot_enabled_channels = list(set(db_options.dadbot_enabled_channels) -
+                                                  set(channel.id for channel in channels))
         await db_options.save()
 
         for channel in channels:

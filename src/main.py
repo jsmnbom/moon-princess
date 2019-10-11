@@ -1,3 +1,6 @@
+import db
+import cogs
+from dotenv import load_dotenv
 import os
 import discord
 from discord.ext import commands
@@ -7,22 +10,22 @@ import asyncio
 import signal
 
 import logging
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
-from dotenv import load_dotenv
 load_dotenv()
 
 sys.path.append('.')
 
-import cogs
-import db
 
 class Help(discord.ext.commands.DefaultHelpCommand):
     def __init__(self):
         super().__init__()
         self.no_category = 'Other'
 
+
 bot = commands.Bot(command_prefix='-', help_command=Help())
+
 
 @bot.event
 async def on_ready():
@@ -31,6 +34,7 @@ async def on_ready():
 
 for cog in map(cogs.__dict__.get, cogs.__all__):
     bot.add_cog(cog(bot))
+
 
 def _cancel_tasks(loop):
     try:
@@ -46,7 +50,8 @@ def _cancel_tasks(loop):
     for task in tasks:
         task.cancel()
 
-    loop.run_until_complete(asyncio.gather(*tasks, loop=loop, return_exceptions=True))
+    loop.run_until_complete(asyncio.gather(
+        *tasks, loop=loop, return_exceptions=True))
 
     for task in tasks:
         if task.cancelled():
@@ -57,6 +62,7 @@ def _cancel_tasks(loop):
                 'exception': task.exception(),
                 'task': task
             })
+
 
 def run():
     loop = asyncio.get_event_loop()
@@ -95,6 +101,6 @@ def run():
     if not future.cancelled():
         return future.result()
 
+
 if __name__ == '__main__':
     run()
-    

@@ -5,6 +5,7 @@ import logging
 
 logger = logging.getLogger('db')
 
+
 async def init():
     logger.debug('Init start')
     await Tortoise.init(
