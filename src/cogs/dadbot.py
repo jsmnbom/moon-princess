@@ -13,6 +13,7 @@ class DadBot(commands.Cog, name='Options'):
         return f'{self.bot.user.name} Proxy'
 
     @commands.Cog.listener()
+    @commands.guild_only()
     async def on_message(self, message):
         if message.author == self.bot.user:
             return
@@ -30,11 +31,13 @@ class DadBot(commands.Cog, name='Options'):
                                            username='Dad', avatar_url='https://i.imgur.com/YaP098z.jpg')
 
     @commands.group()
+    @commands.guild_only()
     async def dadbot(self, ctx):
         if ctx.invoked_subcommand is None:
             await self.bot.send_help(ctx, 'dadbot')
 
     @dadbot.command(name='showenabled', aliases=['show'])
+    @commands.guild_only()
     async def show_enabled(self, ctx):
         guild_options = await ctx.get_guild_options()
 
@@ -49,6 +52,7 @@ class DadBot(commands.Cog, name='Options'):
             await ctx.send('Dadbot enabled channel(s): {}'.format(', '.join(channel.mention for channel in set(channels))))
 
     @dadbot.command()
+    @commands.guild_only()
     async def enable(self, ctx, channels: commands.Greedy[discord.TextChannel]):
         guild_options = await ctx.get_guild_options()
 
