@@ -4,9 +4,7 @@ from dotenv import load_dotenv
 import os
 import discord
 from discord.ext import commands
-import sys
 import asyncio
-import signal
 
 import logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
